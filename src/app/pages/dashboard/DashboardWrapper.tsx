@@ -50,7 +50,7 @@ const DashboardWrapper = () => {
       );
       console.log(resLeader);
 
-      const resStats = await apiClient.get(
+      const resData = await apiClient.get(
         `/statistics/get-statistics${buildQueryParams()}`
       );
       console.log(resData);

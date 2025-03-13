@@ -1,7 +1,6 @@
 
 import {FC} from 'react'
 import {KTIcon, toAbsoluteUrl} from '../../../helpers'
-import {Dropdown1} from '../dropdown/Dropdown1'
 
 type Props = {
   image: string

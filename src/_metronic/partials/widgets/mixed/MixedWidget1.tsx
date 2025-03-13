@@ -1,6 +1,5 @@
 
 import { FC } from 'react'
-import {Dropdown1} from '../../content/dropdown/Dropdown1'
 import {KTIcon} from '../../../helpers'
 
 type Props = {

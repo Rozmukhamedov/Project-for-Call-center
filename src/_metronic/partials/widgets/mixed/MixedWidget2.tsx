@@ -3,7 +3,6 @@ import {useEffect, useRef, FC} from 'react'
 import ApexCharts, {ApexOptions} from 'apexcharts'
 import {KTIcon} from '../../../helpers'
 import {getCSSVariableValue} from '../../../assets/ts/_utils'
-import {Dropdown1} from '../../content/dropdown/Dropdown1'
 import {useThemeMode} from '../../layout/theme-mode/ThemeModeProvider'
 
 type Props = {
