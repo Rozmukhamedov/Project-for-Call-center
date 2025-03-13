@@ -24,7 +24,7 @@ const PrivateRoutes = () => {
         <Route path="users" element={<UsersIndex />} />
 
         {/* Lazy Modules */}
-        <Route path="*" element={<Navigate to="/error/404" />} />
+        <Route path="*" element={<Navigate to="/dahboard" />} />
       </Route>
     </Routes>
   );
