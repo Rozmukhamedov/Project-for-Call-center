@@ -1,0 +1,13 @@
+.special-label {
+    display: none;
+}
+
+.react-tel-input .flag-dropdown {
+    display: none;
+    /* Скрываем флажок страны */
+}
+
+.react-tel-input .form-control {
+    padding-left: 10px;
+    /* Корректируем отступ для ввода номера */
+}

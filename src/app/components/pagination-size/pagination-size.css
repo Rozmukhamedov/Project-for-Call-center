@@ -1,0 +1,11 @@
+.pagination-block{
+    max-width: 70px;
+    width: 100%;
+    cursor: pointer;
+}
+
+
+.pagination-selects{
+    padding: 5px 10px !important;
+    cursor: pointer;
+}

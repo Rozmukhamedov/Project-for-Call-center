@@ -1,0 +1,299 @@
+import moment from "moment";
+import { useIntl } from "react-intl";
+import { useSearchParams } from "react-router-dom";
+import apiClient from "../../../_metronic/hook/apiClient";
+import { FC, ReactNode, useEffect, useState } from "react";
+import { KTSVG, toAbsoluteUrl } from "../../../_metronic/helpers";
+import { Content } from "../../../_metronic/layout/components/content";
+import { ApiError, notifyError } from "../../../_metronic/helpers/notifyError";
+import {
+  ESButton,
+  ESPagination,
+  ESPaginationSize,
+  ESTable,
+} from "../../components";
+
+export interface QueryParams {
+  page?: number;
+  page_size?: number;
+  search?: string;
+}
+
+export type NotificationType = {
+  id: number;
+  full_name: string;
+  team_id: number;
+  avatar: string;
+  phone: string;
+  email: string;
+  count_of_plan: number;
+  created_at: string;
+  updated_at: string;
+};
+
+export const NotificationIndex: FC = () => {
+  const intl = useIntl();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [data, setData] = useState<NotificationType[]>([]);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [searchName, setSearchName] = useState<string>("");
+
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+
+  // QUERY PARAMS
+  const page = parseInt(searchParams.get("page") as string, 10) || 1;
+  const page_size = parseInt(searchParams.get("page_size") as string, 10) || 20;
+  const search = searchParams.get("search") || "";
+  const [totalPageCount, setTotalPageCount] = useState(
+    parseInt(searchParams.get("total_page_count") as string, 10) || 1
+  );
+
+  const buildQueryParams = () => {
+    let query = `?page=${page}&page_size=${page_size}`;
+    if (search) query += `&search=${search}`;
+
+    return query;
+  };
+
+  // GET DATA
+  async function getData() {
+    try {
+      const res = await apiClient.get(`/employees${buildQueryParams()}`);
+      setData(res.data.data || []);
+      setTotalPageCount(res.data.meta.total);
+      setIsLoading(false);
+    } catch (error) {
+      const apiError = error as ApiError;
+      notifyError(intl, apiError.response.status);
+    }
+  }
+
+  useEffect(() => {
+    getData();
+  }, [searchParams]);
+
+  // TABLE COMPONENT
+  const [tableThead] = useState([
+    {
+      title: intl.formatMessage({ id: "COMMON.ID" }),
+      key: "id",
+      isActive: true,
+      disabled: true,
+      className: "w-25px text-center",
+    },
+    {
+      title: intl.formatMessage({ id: "COMMON.TEAM" }),
+      key: "team_id",
+      isActive: true,
+      disabled: true,
+    },
+    {
+      title: "",
+      key: "actions",
+      className: "w-50px",
+      disabled: true,
+    },
+  ]);
+
+  const renderTableRow = (
+    value: NotificationType,
+    selectedItems: number[],
+    setSelectedItems: React.Dispatch<React.SetStateAction<number[]>>
+  ) => {
+    const isSelected = selectedItems.includes(value.id);
+
+    const handleCheckboxChange = (id: number) => {
+      setSelectedItems(
+        (prevSelected) =>
+          prevSelected.includes(id)
+            ? prevSelected.filter((itemId) => itemId !== id) // Удалить из массива
+            : [...prevSelected, id] // Добавить в массив
+      );
+    };
+
+    return (
+      <tr key={`list-${value.id}`}>
+        {/* Чекбокс */}
+        <th className="w-25px ps-3 align-middle">
+          <div className="form-check form-check-sm form-check-custom form-check-solid">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              checked={isSelected} // Контролируемое состояние чекбокса
+              onChange={(e) => {
+                handleCheckboxChange(value.id);
+                e.stopPropagation();
+              }}
+            />
+          </div>
+        </th>
+
+        {/* Генерация ячеек для видимых колонок */}
+        {tableThead.map(
+          (column) =>
+            column.isActive && (
+              <td
+                key={`${column.key}-${value.id}`}
+                className={`align-middle ${column.className}`}
+              >
+                {renderColumnData(
+                  column.key,
+                  value[column.key as keyof NotificationType]
+                )}
+              </td>
+            )
+        )}
+      </tr>
+    );
+  };
+
+  const renderColumnData = (
+    key: string,
+    value: NotificationType[keyof NotificationType]
+  ): ReactNode => {
+    switch (key) {
+      case "full_name":
+        return (
+          <div className="d-flex align-items-center">
+            <div className="symbol symbol-45px me-5">
+              <img src={toAbsoluteUrl("media/svg/avatars/blank.svg")} alt="" />
+            </div>
+            <div className="d-flex justify-content-start flex-column">
+              <a
+                href="#"
+                className="text-gray-900 fw-bold text-hover-primary fs-6"
+              >
+                {value}
+              </a>
+            </div>
+          </div>
+        );
+      case "is_trial":
+      case "is_active":
+        return value
+          ? intl.formatMessage({ id: "COMMON.YES" })
+          : intl.formatMessage({ id: "COMMON.NO" });
+
+      case "created_at":
+      case "updated_at":
+      case "active_at":
+        return value ? moment(value.toString()).format("DD.MM.YYYY") : "";
+
+      default:
+        return value ? value.toString() : "";
+    }
+  };
+
+  // Visisble Column
+  // Пересчёт "Выбрать все"
+
+  // OTHER
+  const changeSelectedItems = (data: NotificationType[]) => {
+    if (data.length <= selectedItems.length) {
+      setSelectedItems([]);
+      return;
+    }
+    setSelectedItems(data.map((item: NotificationType) => item.id));
+  };
+
+  const changeQueryParams = (param: QueryParams) => {
+    Object.entries(param).forEach(([name, value]) => {
+      searchParams.set(name, `${value}`);
+    });
+
+    setSearchParams(searchParams);
+  };
+
+  useEffect(() => {
+    if (search != "") {
+      setSearchName(search);
+    }
+  }, []);
+
+  return (
+    <>
+      <Content>
+        <div className="h-100 d-flex flex-column flex-column-fluid">
+          <div className="card card-stretch shadow flex-column-fluid">
+            <div className="card-header border-0">
+              <div className="d-flex align-items-center justify-content-center">
+                <div className="d-flex align-items-center position-relative input-group-sm my-1 me-3">
+                  <input
+                    type="text"
+                    data-kt-user-table-filter="search"
+                    className="form-control form-control-solid w-200px"
+                    placeholder={intl.formatMessage({ id: "COMMON.SEARCH" })}
+                    value={searchName}
+                    onChange={(e) => setSearchName(e.target.value)}
+                  />
+                  {searchName.length > 0 && (
+                    <div
+                      className="btn btn-icon btn-sm position-absolute search-close"
+                      onClick={() => {
+                        setSearchName("");
+                        changeQueryParams({ search: "", page: 1 });
+                      }}
+                    >
+                      <KTSVG
+                        path="media/icons/duotune/arrows/arr061.svg"
+                        className="svg-icon svg-icon-2x text-danger svg-close-icon"
+                      />
+                    </div>
+                  )}
+                </div>
+                <ESButton
+                  className="btn btn-primary btn-sm"
+                  onClick={() => {
+                    searchName !== "" &&
+                      changeQueryParams({
+                        search: searchName,
+                        page: 1,
+                      });
+                  }}
+                >
+                  {intl.formatMessage({ id: "COMMON.SEARCH" })}
+                </ESButton>
+              </div>
+            </div>
+            <div className="card-body main-overflow-x pt-0">
+              <ESTable
+                isLoading={isLoading}
+                thead={tableThead}
+                data={data.length}
+                selectedItems={selectedItems.length}
+                onChageSelectedItems={() => changeSelectedItems(data)}
+              >
+                {data.map((item) =>
+                  renderTableRow(item, selectedItems, setSelectedItems)
+                )}
+              </ESTable>
+            </div>
+            <div className="w-100 d-flex justify-content-between px-4 pb-5">
+              <ESPaginationSize
+                value={page_size}
+                onChange={(e) =>
+                  changeQueryParams({
+                    page_size: e,
+                  })
+                }
+              />
+              <ESPagination
+                items={totalPageCount}
+                itemsPerPage={page}
+                pageSize={page_size}
+                onPageChange={(page) =>
+                  changeQueryParams({
+                    page: page,
+                  })
+                }
+                page={page}
+              />
+            </div>
+          </div>
+        </div>
+      </Content>
+    </>
+  );
+};

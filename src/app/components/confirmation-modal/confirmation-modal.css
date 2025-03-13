@@ -1,0 +1,26 @@
+.modal-header,
+.modal-footer {
+    border: none !important;
+}
+
+
+
+
+
+
+.modal-body-confirm {
+
+   
+}
+
+
+
+
+
+.close {
+    background-color: transparent !important;
+}
+
+.save {
+    background-color: transparent !important;
+}
