@@ -48,8 +48,6 @@ const DashboardWrapper = () => {
       const resLeader = await apiClient.get(
         `/statistics/get-employee-leader${buildQueryParams()}`
       );
-      console.log(resLeader);
-
       const resData = await apiClient.get(
         `/statistics/get-statistics${buildQueryParams()}`
       );
