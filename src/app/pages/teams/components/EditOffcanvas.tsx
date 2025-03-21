@@ -1,21 +1,24 @@
 import * as Yup from "yup";
-import { FC, useState } from "react";
+import moment from "moment";
+import { TeamType } from "..";
 import { useFormik } from "formik";
+import { FC, useState } from "react";
 import { useIntl } from "react-intl";
+import { toast } from "react-toastify";
+import apiClient from "../../../../_metronic/hook/apiClient";
+import { KPI_STATUSES } from "../../../../_metronic/helpers/contants";
 import {
   ESConfirmationModal,
   ESInput,
+  ESInputSelect,
   ESOffcanvas,
+  ESTextarea,
   ESToggle,
 } from "../../../components";
-import apiClient from "../../../../_metronic/hook/apiClient";
-import { TeamType } from "..";
-import moment from "moment";
 import {
   ApiError,
   notifyError,
 } from "../../../../_metronic/helpers/notifyError";
-import { toast } from "react-toastify";
 
 type EditOffcanvasPropsType = {
   show: boolean;
@@ -44,6 +47,13 @@ export const EditOffcanvas: FC<EditOffcanvasPropsType> = ({
     active_at: Yup.string().required(
       intl.formatMessage({ id: "VALIDATION.REQUIRED" })
     ),
+    stages: Yup.string().max(
+      250,
+      intl.formatMessage({ id: "VALIDATION.MAX_NUMBER" }, { number: 250 })
+    ),
+    kpi_type: Yup.string().required(
+      intl.formatMessage({ id: "VALIDATION.REQUIRED" })
+    ),
     is_active: Yup.boolean().required(
       intl.formatMessage({ id: "VALIDATION.REQUIRED" })
     ),
@@ -55,6 +65,8 @@ export const EditOffcanvas: FC<EditOffcanvasPropsType> = ({
     name: "",
     bitrix_api: "",
     active_at: "",
+    stages: "",
+    kpi_type: "",
     is_active: false,
     is_trial: false,
   };
@@ -146,7 +158,24 @@ export const EditOffcanvas: FC<EditOffcanvasPropsType> = ({
               required
             />
           </div>
-
+          <div className="col-md-12 mb-3">
+            <ESTextarea
+              label={intl.formatMessage({ id: "COMMON.STAGES" })}
+              onChange={(e) => formik.setFieldValue("stages", e)}
+              touched={formik.touched.stages}
+              errors={formik.errors.stages}
+              required
+            />
+          </div>
+          <div className="col-md-12 mb-3">
+            <ESInputSelect
+              label={intl.formatMessage({ id: "COMMON.KPI_TYPE" })}
+              options={KPI_STATUSES}
+              value={formik.values.kpi_type}
+              onChange={(option) => formik.setFieldValue("kpi_type", option?.value)}
+              required
+            />
+          </div>
           <div className="col-md-6 mb-3">
             <ESToggle
               value={formik.values.is_trial}

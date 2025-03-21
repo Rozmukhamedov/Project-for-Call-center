@@ -50,9 +50,7 @@ const DashboardWrapper = () => {
   const [info, setInfo] = useState<InfoType | null>(null);
 
   // QUERY PARAMS
-  const date = parseInt(
-    searchParams.get("date") || moment().format("DD-MM-YYYY")
-  );
+  const date = searchParams.get("date") || moment().format("DD-MM-YYYY");
 
   const buildQueryParams = () => {
     const query = `?date=${date}`;
@@ -116,13 +114,13 @@ const DashboardWrapper = () => {
                       {intl.formatMessage({ id: "COMMON.SHARES" })}
                     </span>
 
-                    <span className="badge badge-light-success fs-1">
+                    {/* <span className="badge badge-light-success fs-1">
                       <KTIcon
                         iconName="arrow-up"
                         className="fs-5 text-success ms-n1"
                       />
                       2.2%
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               </div>
@@ -143,12 +141,30 @@ const DashboardWrapper = () => {
                       {intl.formatMessage({ id: "COMMON.SHARES" })}
                     </span>
 
-                    <span className="badge badge-light-danger fs-1">
+                    {/* <span className="badge badge-light-danger fs-1">
                       <KTIcon
                         iconName="arrow-down"
                         className="fs-5 text-danger ms-n1"
                       />
                       2.2%
+                    </span> */}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3">
+            <div className="card h-100ox mb-5 mb-xl-10">
+              <div className="card-header py-5">
+                <div className="card-title d-flex flex-column w-100">
+                  <span className="text-black-500 pt-1 fw-semibold fs-2 mb-5">
+                    {intl.formatMessage({
+                      id: "COMMON.TOTAL_OUTCOME_CALL_AMOUNT",
+                    })}
+                  </span>
+                  <div className="d-flex align-items-center">
+                    <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
+                      {info?.totalIncomeCallAmount || 0}
                     </span>
                   </div>
                 </div>
@@ -161,35 +177,19 @@ const DashboardWrapper = () => {
                 <div className="card-title d-flex flex-column w-100">
                   <span className="text-black-500 pt-1 fw-semibold fs-2 mb-5">
                     {intl.formatMessage({
-                      id: "COMMON.NUMBER_OF_QUALITY_LEADS",
+                      id: "COMMON.TOTAL_INCOME_CALL_AMOUNT",
                     })}
                   </span>
                   <div className="d-flex align-items-center">
                     <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
-                      3 325 {intl.formatMessage({ id: "COMMON.SHARES" })}
+                      {info?.totalIncomeCallAmount || 0}
                     </span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="col-md-3">
-            <div className="card h-100ox mb-5 mb-xl-10">
-              <div className="card-header py-5">
-                <div className="card-title d-flex flex-column w-100">
-                  <span className="text-black-500 pt-1 fw-semibold fs-2 mb-5">
-                    {intl.formatMessage({ id: "COMMON.CONVERSION" })}
-                  </span>
-                  <div className="d-flex align-items-center">
-                    <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
-                      19.69%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-6">
+          {/* <div className="col-md-6">
             <div
               className="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-200px mb-5 mb-xl-10"
               style={{
@@ -232,7 +232,7 @@ const DashboardWrapper = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="col-md-6">
             <div
               className="card card-flush bgi-no-repeat bgi-size-contain bgi-position-x-end h-200px mb-5 mb-xl-10"
@@ -248,14 +248,15 @@ const DashboardWrapper = () => {
                     {intl.formatMessage({ id: "COMMON.TOTAL_SALES_VOLUME" })}
                   </span>
                   <span className="fs-3hx fw-bold text-black mb-0">
-                    287 765 000 {intl.formatMessage({ id: "COMMON.SUM" })}
+                    {info?.totalSalesSumPricd || 0}{" "}
+                    {intl.formatMessage({ id: "COMMON.SUM" })}
                   </span>
                   <span className="badge badge-light-success fs-1">
                     <KTIcon
                       iconName="arrow-up"
                       className="fs-5 text-success ms-n1"
                     />
-                    2.2%
+                    {info?.result?.percent || 0}%
                   </span>
                 </div>
               </div>
@@ -295,9 +296,9 @@ const DashboardWrapper = () => {
                         <th className="fs-2">
                           {intl.formatMessage({ id: "COMMON.PLAN" })}
                         </th>
-                        <th className="fs-2">
+                        {/* <th className="fs-2">
                           {intl.formatMessage({ id: "COMMON.INCOME" })}
-                        </th>
+                        </th> */}
                         <th className="fs-2">
                           {intl.formatMessage({ id: "COMMON.PROGRESS" })}
                         </th>
@@ -350,11 +351,11 @@ const DashboardWrapper = () => {
                               {item.count_of_plan}
                             </div>
                           </td>
-                          <td>
+                          {/* <td>
                             <div className="text-gray-900 fw-bold d-block fs-2">
                               1 730 000
                             </div>
-                          </td>
+                          </td> */}
                           <td className="text-end">
                             <div className="d-flex flex-row w-100 me-2 align-items-center">
                               <div className="progress h-10px w-100">

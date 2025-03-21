@@ -15,7 +15,7 @@ const Navbar = () => {
         className={clsx("app-navbar-item d-flex align-items-center", itemClass)}
       >
         <p className="anchor fw-bolder mb-0">
-          {intl.formatMessage({ id: "COMMON.TIME" })}: 10:00 - 18:00
+          {intl.formatMessage({ id: "COMMON.TIME" })}: 9:00 - 18:00
         </p>
       </div>
       <div className={clsx("app-navbar-item", itemClass)}>

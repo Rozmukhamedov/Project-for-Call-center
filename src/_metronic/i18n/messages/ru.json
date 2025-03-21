@@ -85,6 +85,12 @@
   "COMMON.DONE": "Выполнено",
   "COMMON.PLAN": "План",
   "COMMON.INCOME": "Доход",
+  "COMMON.TOTAL_INCOME_CALL_AMOUNT": "Общая сумма дохода по звонку",
+  "COMMON.TOTAL_OUTCOME_CALL_AMOUNT": "Общая сумма дохода по звонку",
+  "COMMON.STAGES": "Стадии",
+  "COMMON.KPI_TYPE": "Тип KPI",
+  "COMMON.TRANSACTIONS_AMOUNT": "Сумма сделки",
+  "COMMON.NUMBER_OF_CALLS": "Количество звонков",
 
   "COMMON.CREATE_USER": "Создать пользователя",
   "COMMON.EDIT_USER": "Редактировать пользователя",
