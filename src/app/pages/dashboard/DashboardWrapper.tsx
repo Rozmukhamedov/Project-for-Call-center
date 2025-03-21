@@ -1,3 +1,4 @@
+import moment from "moment";
 import { useIntl } from "react-intl";
 import { ESInput } from "../../components";
 import { useEffect, useState } from "react";
@@ -7,17 +8,34 @@ import { KTIcon, toAbsoluteUrl } from "../../../_metronic/helpers";
 import { Content } from "../../../_metronic/layout/components/content";
 import { ApiError, notifyError } from "../../../_metronic/helpers/notifyError";
 
-export type UserType = {
+type DataType = {
   id: number;
-  password: string;
-  name: string | null;
-  telegram_id: string;
-  email: string;
-  email_verified_at: string;
+  full_name: string;
+  team_id: number;
+  avatar: string;
   phone: string;
-  phone_verified_at: string;
-  super_admin: number;
+  email: string;
+  count_of_plan: number;
+  done_percent: number;
+  done: number;
   created_at: string;
+  updated_at: string;
+};
+
+type ResultType = {
+  plan: number;
+  real: number;
+  percent: number;
+};
+
+type InfoType = {
+  totalCallAmount: number;
+  totalIncomeCallAmount: number;
+  totalOutcomeCallAmount: number;
+  totalSalesAmount: number;
+  totalSalesSumPricd: number;
+  result: ResultType;
+  kpi_type: string;
 };
 
 export interface QueryParams {
@@ -28,10 +46,13 @@ const DashboardWrapper = () => {
   const intl = useIntl();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [data, setData] = useState([{}, {}, {}, {}]);
+  const [data, setData] = useState<DataType[]>([]);
+  const [info, setInfo] = useState<InfoType | null>(null);
 
   // QUERY PARAMS
-  const date = parseInt(searchParams.get("date") || "");
+  const date = parseInt(
+    searchParams.get("date") || moment().format("DD-MM-YYYY")
+  );
 
   const buildQueryParams = () => {
     const query = `?date=${date}`;
@@ -42,16 +63,14 @@ const DashboardWrapper = () => {
   // GET DATA
   async function getData() {
     try {
-      const res = await apiClient.get(`/app${buildQueryParams()}`);
-      // setData(res.data.data || []);
-
       const resLeader = await apiClient.get(
         `/statistics/get-employee-leader${buildQueryParams()}`
       );
+      setData(resLeader.data.data.employees || []);
       const resData = await apiClient.get(
         `/statistics/get-statistics${buildQueryParams()}`
       );
-      console.log(resData);
+      setInfo(resData.data.data || null);
     } catch (error) {
       const apiError = error as ApiError;
       notifyError(intl, apiError.response.status);
@@ -93,7 +112,8 @@ const DashboardWrapper = () => {
                   </span>
                   <div className="d-flex align-items-center">
                     <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
-                      69 700 {intl.formatMessage({ id: "COMMON.SHARES" })}
+                      {info?.totalCallAmount}{" "}
+                      {intl.formatMessage({ id: "COMMON.SHARES" })}
                     </span>
 
                     <span className="badge badge-light-success fs-1">
@@ -119,7 +139,8 @@ const DashboardWrapper = () => {
                   </span>
                   <div className="d-flex align-items-center">
                     <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
-                      17 854 ta
+                      {info?.totalSalesAmount}{" "}
+                      {intl.formatMessage({ id: "COMMON.SHARES" })}
                     </span>
 
                     <span className="badge badge-light-danger fs-1">
@@ -145,7 +166,7 @@ const DashboardWrapper = () => {
                   </span>
                   <div className="d-flex align-items-center">
                     <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
-                      3 325 ta
+                      3 325 {intl.formatMessage({ id: "COMMON.SHARES" })}
                     </span>
                   </div>
                 </div>
@@ -247,7 +268,7 @@ const DashboardWrapper = () => {
                   <div className="btn btn btn-color-muted btn-active btn-active-primary active px-4 me-1">
                     {intl.formatMessage({ id: "COMMON.LEADERBOARD" })}
                   </div>
-                  <div className="btn btn btn-color-muted btn-active btn-active-primary px-4 me-1">
+                  {/* <div className="btn btn btn-color-muted btn-active btn-active-primary px-4 me-1">
                     {intl.formatMessage({ id: "COMMON.BY_CASH_REGISTER" })}
                   </div>
                   <div className="btn btn btn-color-muted btn-active btn-active-primary px-4">
@@ -255,7 +276,7 @@ const DashboardWrapper = () => {
                   </div>
                   <div className="btn btn btn-color-muted btn-active btn-active-primary px-4">
                     {intl.formatMessage({ id: "COMMON.CONVERSION" })}
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -285,10 +306,10 @@ const DashboardWrapper = () => {
                     </thead>
 
                     <tbody>
-                      {data.map((_, index: number) => (
+                      {data.map((item, index: number) => (
                         <tr key={index}>
                           <td>
-                            <div className="symbol symbol-45px d-flex align-items-center justify-content-center">
+                            <div className="symbol symbol-20px d-flex align-items-center justify-content-center pagination-tv-index">
                               {index + 1}
                             </div>
                           </td>
@@ -299,10 +320,14 @@ const DashboardWrapper = () => {
                                   style={{
                                     borderRadius: "50% !important",
                                   }}
-                                  src={toAbsoluteUrl(
-                                    "media/svg/avatars/blank.svg"
-                                  )}
-                                  alt=""
+                                  src={
+                                    item.avatar.length > 0
+                                      ? item.avatar
+                                      : toAbsoluteUrl(
+                                          "media/svg/avatars/blank.svg"
+                                        )
+                                  }
+                                  alt={item.full_name}
                                 />
                               </div>
                               <div className="d-flex justify-content-start flex-column">
@@ -310,19 +335,19 @@ const DashboardWrapper = () => {
                                   href="#"
                                   className="text-gray-900 fw-bold fs-2"
                                 >
-                                  Ilhomjon Akbarov
+                                  {item.full_name}
                                 </a>
                               </div>
                             </div>
                           </td>
                           <td>
                             <div className="text-gray-900 fw-bold d-block fs-2">
-                              1 730 000
+                              {item.done}
                             </div>
                           </td>
                           <td>
                             <div className="text-gray-900 fw-bold d-block fs-2">
-                              1 730 000
+                              {item.count_of_plan}
                             </div>
                           </td>
                           <td>
@@ -336,12 +361,12 @@ const DashboardWrapper = () => {
                                 <div
                                   className="progress-bar bg-primary"
                                   role="progressbar"
-                                  style={{ width: "50%" }}
+                                  style={{ width: `${item.done_percent}%` }}
                                 ></div>
                               </div>
                               <div className="d-flex flex-stack mb-2 ms-5">
                                 <span className="text-gray-900 fw-bold d-block fs-2">
-                                  50%
+                                  {item.done_percent}%
                                 </span>
                               </div>
                             </div>

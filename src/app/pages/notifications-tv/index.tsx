@@ -23,6 +23,8 @@ export type NotificationType = {
   phone: string;
   email: string;
   count_of_plan: number;
+  done_percent: number;
+  done: number;
   created_at: string;
   updated_at: string;
 };
@@ -53,9 +55,11 @@ export const NotificationsTVIndex: FC = () => {
   // GET DATA
   async function getData() {
     try {
-      const res = await apiClient.get(`/notifications${buildQueryParams()}`);
-      setData(res.data.data || []);
-      setTotalPageCount(res.data.meta.total);
+      const res = await apiClient.get(
+        `/statistics/get-employee-leader${buildQueryParams()}`
+      );
+      setData(res.data.data.employees || []);
+      setTotalPageCount(res.data.meta.total || 1);
     } catch (error) {
       const apiError = error as ApiError;
       notifyError(intl, apiError.response.status);
@@ -174,7 +178,7 @@ export const NotificationsTVIndex: FC = () => {
                   </thead>
 
                   <tbody>
-                    {data.map((_, index: number) => (
+                    {data.map((item, index: number) => (
                       <tr key={index}>
                         <td>
                           {index === 0 && (
@@ -214,10 +218,14 @@ export const NotificationsTVIndex: FC = () => {
                                 style={{
                                   borderRadius: "50% !important",
                                 }}
-                                src={toAbsoluteUrl(
-                                  "media/svg/avatars/blank.svg"
-                                )}
-                                alt=""
+                                src={
+                                  item.avatar.length > 0
+                                    ? item.avatar
+                                    : toAbsoluteUrl(
+                                        "media/svg/avatars/blank.svg"
+                                      )
+                                }
+                                alt={item.full_name}
                               />
                             </div>
                             <div className="d-flex justify-content-start flex-column">
@@ -225,19 +233,21 @@ export const NotificationsTVIndex: FC = () => {
                                 href="#"
                                 className="text-gray-900 fw-bold fs-2"
                               >
-                                Ilhomjon Akbarov
+                                {item.full_name}
                               </a>
                             </div>
                           </div>
                         </td>
                         <td>
                           <div className="text-gray-900 fw-bold d-block fs-2">
-                            153 {intl.formatMessage({ id: "COMMON.SHARES" })}.
+                            {item?.count_of_plan}{" "}
+                            {intl.formatMessage({ id: "COMMON.SHARES" })}
                           </div>
                         </td>
                         <td>
                           <div className="text-gray-900 fw-bold d-block fs-2">
-                            1 730 000 {intl.formatMessage({ id: "COMMON.SUM" })}
+                            {item?.done}{" "}
+                            {intl.formatMessage({ id: "COMMON.SUM" })}
                           </div>
                         </td>
                         <td className="text-end">
@@ -246,12 +256,12 @@ export const NotificationsTVIndex: FC = () => {
                               <div
                                 className="progress-bar bg-primary"
                                 role="progressbar"
-                                style={{ width: "50%" }}
+                                style={{ width: `${item?.done_percent || 0}%` }}
                               ></div>
                             </div>
                             <div className="d-flex flex-stack mb-2 ms-5">
                               <span className="text-gray-900 fw-bold d-block fs-2">
-                                50%
+                                {item?.done_percent || 0}%
                               </span>
                             </div>
                           </div>
