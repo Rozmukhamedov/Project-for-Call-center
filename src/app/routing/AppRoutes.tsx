@@ -21,13 +21,13 @@ const AppRoutes: FC = () => {
             </>
           ) : (
             <>
-              <Route path="auth/*" element={<AuthPage />} />
+              <Route path="/auth/*" element={<AuthPage />} />
               <Route path="*" element={<Navigate to="/auth" />} />
             </>
           )}
 
-          <Route path="error/*" element={<ErrorsPage />} />
-          <Route path="logout" element={<Logout />} />
+          <Route path="/error/*" element={<ErrorsPage />} />
+          <Route path="/logout" element={<Logout />} />
         </Route>
       </Routes>
     </BrowserRouter>

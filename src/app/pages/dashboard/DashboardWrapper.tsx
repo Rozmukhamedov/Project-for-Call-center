@@ -112,7 +112,7 @@ const DashboardWrapper = () => {
                   </span>
                   <div className="d-flex align-items-center">
                     <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
-                      {info?.totalCallAmount}{" "}
+                      {info?.totalCallAmount || 0}{" "}
                       {intl.formatMessage({ id: "COMMON.SHARES" })}
                     </span>
 
@@ -139,7 +139,7 @@ const DashboardWrapper = () => {
                   </span>
                   <div className="d-flex align-items-center">
                     <span className="fs-2hx fw-bold text-gray-900 me-2 lh-1 ls-n2 me-20">
-                      {info?.totalSalesAmount}{" "}
+                      {info?.totalSalesAmount || 0}{" "}
                       {intl.formatMessage({ id: "COMMON.SHARES" })}
                     </span>
 
